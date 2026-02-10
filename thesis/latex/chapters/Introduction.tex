@@ -1,0 +1,49 @@
+\chapter{Introduction}\label{Introduction}
+\thispagestyle{empty}
+\setlength{\parskip}{10pt plus 5pt minus 3pt}
+\setlength{\parindent}{20pt}%
+
+Human activity recognition can be defined as the task of identifying a sequence of actions and classifying them into various classes. Human activity recognition is an important area of computer vision and has found applications in various fields like 
+surveillance systems, video retrieval systems, patient monitoring systems, predicting crowd behavior, etc.The task of human activity recognition consists of the following steps:\begin{enumerate}
+\item Getting the low level representation from videos
+\item Using the low level representation to get features that better describe the video
+\item Using the features extracted above to classify the videos into the predefined classes
+\end{enumerate}
+
+Videos contain massive amount of information in the terms of spatio-temporal pixel  intensity variations.\Mycite{MRSurvey} Extracting both the spatial information as well as the temporal information is necessary for the task of video classification. The spatial information identifies the appearance based information like, objects, gradients, backgrounds etc from the video while the temporal information helps to identify the motion between the identified appearance based features.
+
+The task of video classification however becomes complex due to the limitations inherent in the data. The following challenges are faced in the task:-
+\begin{enumerate}
+\item Varying length representations-
+A video's inherent attribute is it's duration or length. The length of the video
+affects the number of frames present in it. The more the length of the video, more are the number of frames associated with it. Therefore, when we map features from the video data,we get a varying length feature for each video.
+
+\item High Dimensionality-
+The image data has very high dimensionality due to the spatial information
+captured by it's pixels. Drawing inferences from data of such high dimensions
+soon becomes intractable. We know that videos are sequence of images. So
+in case of images, only spatial modeling is required, but we need to represent
+temporal information also when dealing with videos.
+
+\item Intra-class variability-
+Within video belonging to the same class, there is a lot of variation in terms
+of appearance, color and duration of the video.This results in a high intra-class
+variability due to which efficient representations are difficult to implement.
+
+\item Inter-class similarity-
+The video belonging to different classes may have many things in common, for
+example, background, objects, etc.
+
+\item Action vocabulary is not well defined-
+Various actions and activities are not well defined, for example, opening an umbrella, closing a door, closing a faucet,etc
+
+\end{enumerate}
+
+\section{Problem Definition}
+It is easy to note from the above section that the task of human activity recognition is a complex task which has lot of scope in the real world applications. The task of classification then requires us to choose a suitable feature representation and classification strategy to efficiently capture and utilize appearance based and motion based information from the videos.\\
+
+Videos are a collection of spatially and temporally related frames. To capture the spatial as well as temporal information, we need to define features that inter-class similarities and intra-class variations.\\
+
+Since the feature representation for each video would be dependent on the number of frames it possesses, we need to define a classifier that takes into consideration the varying length representation of the videos.\\
+
+This report is arranged as follows: we discuss the related work in Chapter \ref{Related_Work}. We then discuss the features that may be extracted from the videos in Chapter \ref{Feature_Extraction}. We look at the various classifiers and discuss their advantages and disadvantages in Chapter \ref{Classifiers}. We then present our model in Chapter \ref{Proposed_Approach}. Chapter \ref{Observations} and Chapter \ref{Conclusion} presents the experimental works and conclusions.

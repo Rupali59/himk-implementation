@@ -1,0 +1,182 @@
+\documentclass[oneside,12pt]{VTU_sgr}
+
+\title{\textcolor[rgb]{0.65,0.16,0}{Human Activity Recognition using HMM based Intermediate Matching Kernel by representing videos as sequence of sets of feature vectors}}
+
+\author{by \\ 
+		\vspace{4mm}\textbf{\large{\textcolor[rgb]{0.65,0.16,0}{Rupali Bhatnagar}}} \\
+		\textbf{\large{\textcolor[rgb]{0.65,0.16,0}{[Roll No. 14CSE2013]}}} \\ 
+		\vspace{4mm}Under the guidance of \\
+		\textbf{\large{\textcolor[rgb]{0.42,0,0.5}{Dr. Veena T.}}} \\
+		 \vspace{4mm}
+		 \begin{figure}[!hbtp]
+\centering
+\includegraphics[width=40mm]{figures/NITG-Logo.jpg}
+\end{figure}
+} 
+
+
+\collegeordept{\vspace{-3mm} \normalsize {\textbf{\textcolor[rgb]{0,0.071,0.5}{DEPARTMENT OF COMPUTER SCIENCE AND ENGINEERING}}}}
+\university{\small{\textbf{\textcolor[rgb]{0,0.071,0.5}{NATIONAL INSTITUTE OF 
+TECHNOLOGY GOA}}} \\
+\small{\textbf{\textcolor[rgb]{0,0.071,0.5}{FARMAGUDI, PONDA, GOA-403401, 
+INDIA}}}}
+\renewcommand{\submittedtext}{\vspace{3mm} Dissertation submitted in partial fulfilment of the requirements\\for the award of the degree of}
+\degree{\textbf{\large{\textcolor[rgb]{0,0,1}{MASTER OF TECHNOLOGY}}}  }
+\degreedate{\vspace{-4mm} 
+\small{\textbf{\textcolor[rgb]{0,0.071,0.5}{\today}}}}
+
+\hbadness=10000
+\hfuzz=50pt
+
+\usepackage{glossaries}
+\usepackage{makeidx}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{rotating}
+\usepackage{enumitem}
+\usepackage{multirow}
+\usepackage{threeparttable}
+\usepackage{fancyhdr}
+\usepackage{lscape,multicol,longtable}
+\usepackage{subfig}
+\usepackage{url}
+\usepackage{balance}
+\usepackage{setspace}
+\usepackage{lmodern}
+\usepackage{tabularx}
+\usepackage{graphics}
+\usepackage{footnote}
+\usepackage{multirow}
+\usepackage[numbers]{natbib}
+\usepackage{mathtools} % Bonus
+\newtheorem{theorem}{Theorem}
+\usepackage{notoccite}
+\usepackage{algorithm}
+\usepackage[utf8]{inputenc}
+\usepackage[english]{babel}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{makeidx}
+
+
+
+\usepackage[noend]{algpseudocode}
+\algnewcommand{\Inputs}[1]{%
+  \State \textbf{Inputs:}
+  \Statex \hspace*{\algorithmicindent}\parbox[t]{.8\linewidth}{\raggedright #1}
+}
+\algnewcommand{\Initialize}[1]{%
+  \State \textbf{Initialize:}
+  \Statex \hspace*{\algorithmicindent}\parbox[t]{.8\linewidth}{\raggedright #1}
+}
+\DeclareMathOperator*{\argmax}{arg\,max}
+\captionsetup{skip=0pt}
+
+\newcommand\Mycite[1]{%
+  \cite{#1}}
+
+
+\usepackage{changepage}
+\newenvironment{proof}[1][Proof]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{example}[1][Example]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\newenvironment{remark}[1][Remark]{\begin{trivlist}
+\item[\hskip \labelsep {\bfseries #1}]}{\end{trivlist}}
+\makeindex
+\makeglossaries
+
+\begin{document}
+
+\newcommand{\keywords}[1]{\par\addvspace\baselineskip
+\noindent\keywordname\enspace\ignorespaces#1}
+
+\newcommand{\up}{\ensuremath{\mathrm{\Upsilon}}}
+\newcommand{\ch}{\ensuremath{\mathcal{C}}}
+\newcommand{\adv}{\ensuremath{\mathcal{A}}}
+\newcommand{\advi}{\ensuremath{\mathcal{A}_i}}
+\newcommand{\ui}{{\ensuremath{\mathrm{U}_{i}}}}
+\newcommand{\bs}{\ensuremath{\mathcal{B}}}
+\newcommand{\zp}{\ensuremath{\mathbb{Z}_p^*}}
+\newcommand{\fm}{\ensuremath{\mathcal{F}}}
+\newcommand{\mt}[1]{$\mathtt{#1}$} 
+\newcommand{\qed}{\hfill \ensuremath{\Box}}
+\newcommand{\binomwo}[2]{\genfrac{}{}{0pt}{}{#1}{#2}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\renewcommand\baselinestretch{1.35}
+\baselineskip=18pt plus1pt
+\maketitle
+\setcounter{secnumdepth}{3}
+\setcounter{tocdepth}{1}
+
+\begin{romanpages}
+
+\include{frontmatter/Certificate}
+
+%\pdfbookmark{Acknowledgement}{Acknowledgement}
+%\include{frontmatter/Acknowledgement}
+
+\include{frontmatter/Dedication}
+
+\pdfbookmark{Abstract}{Abstract}
+\include{frontmatter/Abstract}
+
+
+\pdfbookmark[0]{Content}{content}
+\fancyhead[LE]{\bfseries\small{Contents}}
+\fancyhead[RO]{\bfseries\small{Contents}} \tableofcontents
+\clearpage \pdfbookmark[1]{List of Figures}{lof}
+\fancyhead[LE]{\bfseries\small{List of Figures}}
+\fancyhead[RO]{\bfseries\small{List of Figures}} \listoffigures
+\clearpage
+\pdfbookmark[1]{List of Tables}{lot}
+\fancyhead[LE]{\bfseries\small{List of Tables}}
+\fancyhead[RO]{\bfseries\small{List of Tables}} \listoftables 
+
+\clearpage
+
+\phantomsection
+
+\pdfbookmark[1]{List of Abbreviations}{loa}
+\include{frontmatter/Abbreviation}
+\end{romanpages}
+
+
+\fancyhf{} \fancyhead[LE]{\bfseries\small{\leftmark}}
+\fancyhead[RO]{\bfseries\small{\rightmark}}
+\fancyfoot[CE,CO]{\bfseries\thepage} \setcounter{page}{1}
+\pagenumbering{arabic}
+\renewcommand{\labelenumi}{(\roman{enumi})}  
+
+
+\include{chapters/Introduction}
+\include{chapters/Related_Work}
+\include{chapters/Feature_Extraction}
+\include{chapters/Classifiers}
+\include{chapters/Proposed_Approach}
+\include{chapters/Observations_and_Results}
+\include{chapters/Conclusion}
+
+\appendix
+\clearpage
+
+\pdfbookmark{References}{References}
+\addcontentsline{toc}{chapter}{References}
+
+\include{frontmatter/Bibliography}
+
+\clearpage 
+\phantomsection
+\normalsize
+ \clearpage
+\singlespacing
+{\small
+\phantomsection	
+\addcontentsline{toc}{chapter}{Index}}\printindex
+\clearpage
+
+
+
+
+\end{document}

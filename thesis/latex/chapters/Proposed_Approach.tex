@@ -1,0 +1,193 @@
+\chapter{Proposed Approach}\label{Proposed_Approach}
+\thispagestyle{empty}
+\setlength{\parskip}{10pt plus 5pt minus 3pt}
+\setlength{\parindent}{20pt}%
+
+%\documentclass[10pt,a4paper,oneside]{article}
+%\usepackage[utf8]{inputenc}
+%\usepackage[english]{babel}
+%
+%\usepackage{amsfonts}
+%\usepackage{amssymb}
+%\usepackage{makeidx}
+%\usepackage{graphicx}
+%\usepackage{amsmath}
+%\usepackage{algorithm}
+%
+%\usepackage[noend]{algpseudocode}
+%\algnewcommand{\Inputs}[1]{%
+%  \State \textbf{Inputs:}
+%  \Statex \hspace*{\algorithmicindent}\parbox[t]{.8\linewidth}{\raggedright #1}
+%}
+%\algnewcommand{\Initialize}[1]{%
+%  \State \textbf{Initialize:}
+%  \Statex \hspace*{\algorithmicindent}\parbox[t]{.8\linewidth}{\raggedright #1}
+%}
+%
+%\usepackage{mathtools} % Bonus
+%\newtheorem{theorem}{Theorem}
+%
+%\DeclareMathOperator*{\argmax}{arg\,max}
+%
+%
+%\author{Rupali Bhatnagar}
+%\begin{document}
+
+
+For classifying actions, we use the following methodology:-
+\begin{enumerate}
+\item Feature Extraction
+\item Evaluation of Kernel
+\item Classification using SVM and evaluated kernel
+\end{enumerate}
+
+
+\section{Feature Extraction}
+
+\subsection{Histogram of Oriented Gradient Features}
+For the task of feature extraction, we use Histogram of Oriented Gradients(HoG). We use \citet{HOG} methodology to extract set features for each frame of the video. These set features are then appended to created HoG set feature vector. \\
+This can be easily visualized in the \figurename{~\ref{fig:HoG}}.
+
+\begin{figure}[!hbtp]
+\centering
+\includegraphics[scale=0.5]{figures/Proposed_Approach/Feature_Extraction.png}
+\caption{Histogram of oriented gradients feature extraction from video}
+\label{fig:HoG}
+\end{figure}
+\newpage
+In \figurename{~\ref{fig:HoG}}, the video is divided into constituent frames. The frame is further subdivided into sets. The HoG feature of each set is then taken and appended to get a D-dimensional feature vector of each frame .\\
+
+If there are `f' frames in the video, then the representation of one video would be of order O(fD). This results in a dense representation for the video dataset which is in very huge in size.
+
+
+\subsection{Bag of Visual Words model}
+The Bag Of Visual Words(BoVW) is an extension of the Bag of Words model that is used for document classification.The bag of visual words model is present for images. For videos, it is extended as follows:-
+\begin{enumerate}
+\item Feature Detection- The set features extracted using HoG feature descriptor is used to detect objects in the frames.The frame feature is a concatenation of HoG features extracted from each set. The video features is a concatenation of the frame features that we obtain previously.\\
+
+\item Codebook Generation- To get the visual words, we cluster the whole data using a suitable clustering mechanism. Since each feature in the video feature representation is a histogram, it is better to use a distance measure that captures the similarity between histograms.The process of codebook generation can be visualized in the Figure \ref{codebook}\\
+
+\begin{figure}[!hbtp]
+\centering
+\includegraphics[scale=0.5]{figures/Proposed_Approach/Codebook_Generation.png}
+\caption{Codebook generation for feature extraction}
+\label{codebook}
+\end{figure}
+
+We use the Histogram Match Score as given by Algorithm \ref{HistScore} for measuring the similarity between the 2 histograms. The Histogram Match score based K-medoid algorithm is defined in Algorithm \ref{Kmedoid}\\
+
+\begin{algorithm}[H]
+\caption{Histogram Matching Score }
+\label{HistScore}
+\begin{algorithmic}
+\Inputs{Histogram vectors $h_{i}$ and $h_{j}$}
+\Initialize{score $\gets 0$}
+\For{i :=0 $\to$ num\_bins}
+	\State score $\gets$ score + $\min$($h_i(i),h_{j}(i)$)
+\EndFor
+
+	\State score $\gets \frac{score}{num_bins}$
+	\State return score\;
+
+\end{algorithmic}
+\end{algorithm}
+
+
+\begin{algorithm}[H]
+\caption{Histogram Matching Score based -  K-medoid algorithm}
+\label{Kmedoid}
+\begin{algorithmic}[1]
+\Inputs{k := number of clusters}
+\Initialize{$\lbrace x_{1} , x_{2} \ldots x_{k}\rbrace \gets$ k random cluster centers}
+\While{$\lbrace x_{1} , x_{2} \ldots x_{k}\rbrace$ 	not converged }
+	\For{each data vector $v_{i}$}
+		\For{each cluster center $x_{k}$}
+    		\State Calculate Histogram Matching Score between $v_{i}$ and $x_{k}$
+		\EndFor
+		\State For the data vector $v_{i}$ assign index as:
+		\State index($v_{i}$)$\gets$ $\max$(Histogram Matching Score w.r.t all the cluster centers)
+    \EndFor
+    
+ 	\For{each cluster k}
+ 		\State New cluster center $x_{k}$ = medoid of all the Histogram Scores in the cluster
+ 	\EndFor
+ 	
+ 	\For{each k}
+ 		\If {$x_{new}$ == $x$}
+ 			\State return Converged
+ 		\Else
+ 			\State return Not Converged
+ 		\EndIf
+ 	\EndFor
+ \EndWhile		
+
+\end{algorithmic}
+\end{algorithm}
+
+\end{enumerate}
+
+\section{Evaluation of Kernel}
+After the feature extraction phase, we get a set feature vector representation for a video. A video with T frames is represented as a sequential pattern $X=\lbrace x_1,x_2, \ldots x_T\rbrace$, where $x_t$ is the feature vector for a frame at time $t$.Since the number of frames depends on the duration of the video, the length of the pattern representing different videos would be different.\\
+Hidden Markov Models(HMM) are usually used for classifying sequences of feature vectors.Since the symbols in the set of feature vector is not discrete, we use continuous density HMM (CDHMM) in our proposed approach.
+
+\subsection{HMM based Intermediate Matching Kernel}
+HMM based Intermediate Matching Kernel(HIMK) is a dynamic kernel which is constructed by matching local feature vectors in the 2 feature vectors with the help of virtual feature vectors.The HIMK is therefore constructed by using a continuous density HMM (CDHMM. \citet{HIMK} have designed 2 methods of creating HIMK.\\
+
+In the first approach, they create HIMK by using \textit{subsequence matching} where the subsequences are aligned with the optimal state sequence obtained by using Viterbi's method. Then, a GMM-based IMK for the subsequence aligned at a particular state of the HMM is constructed using the GMM of that state to get the virtual feature vectors. \\
+
+In the second approach, the HIMK is created using \textit{complete sequence matching} in which the virtual feature vectors are selected using the responsibility term of all the components of the GMM at each state of the HMM without and then summing the base kernel over these selected virtual feature vectors. 
+
+\begin{figure}[!hbtp]
+\centering
+\includegraphics[scale=0.5]{figures/Proposed_Approach/Subsequence_HIMK.png} 
+\caption{(a)HIMK created using subsequence matching\Mycite{HIMK}}
+\end{figure}
+
+\begin{figure}[!hbtp]
+\centering
+\includegraphics[scale=0.6]{figures/Proposed_Approach/CompleteSequence_HIMK.png} 
+\caption{(b)HIMK created using complete sequence matching \Mycite{HIMK}}
+\end{figure}
+
+We use the complete sequence matching based HIMK for our work.
+
+\subsection{Complete Sequence Matching based HIMK}
+For 2 videos, $X_m=\lbrace x_m1,x_m2, \ldots x_{m{T_m}}\rbrace$ and $X_n=\lbrace x_n1,x_n2, \ldots x_{n{T_n}}\rbrace$, the virtual feature vectors for the $q^th$ component of GMM of the $i^th$ state of the HMM are defined as:-
+
+\begin{equation}
+x^{*}_{miq}= \argmax_{x_t \in X_m}\mathit{R_{iq}}\left( x_t \mid \mathbf{X}_m,\lambda\right)
+\end{equation}
+ and  
+ \begin{equation}
+x^{*}_{niq}= \argmax_{x_t \in X_n}\mathit{R_{iq}}\left( x_t \mid \mathbf{X}_n,\lambda\right)
+ \end{equation}
+
+where,
+\\ for the continuous density HMM $\lambda$, the probability of being in state $\mathit{i}$ at time $\mathit{t}$ and the $\mathit{q}^{th}$ component of GMM $\Psi_\mathit{i}$ of state $\mathit{i}$ for the local feature $x_t$ in the sequence $\mathbf{X}$ is given by:-
+
+\begin{equation}
+\mathit{R}_{iq}\left(x_t \mid \mathbf{X},\lambda\right)=\nu_{it}\gamma_{iq}\left(x_t\right)
+\end{equation}
+
+Here,$\nu_{it}$ is the probability of being in state $\mathit{i}$ at time $\mathit{t}$ and given $\mathbf{X}$ and $\lambda$,
+\begin{equation}
+\nu_{it}= \mathit{P}\left[s_t=\mathit{i} \mid \mathbf{X},\lambda\right] 
+\end{equation}
+
+Then, the HIMK is calculated as:-
+\begin{equation}
+\mathit{K}_{HIMK}\left(\mathbf{X}_m,\mathbf{X}_n\right)=\sum_{i=1}^{N} \sum_{q=1}^{Q_i}\mathit{k}\left(x^*_{miq},x^*_{niq}\right)
+\end{equation}
+where, $Q_i$ is the number of components of the GMM $\Psi_i$ and $\mathit{k}$ is the base kernel.\begin{figure}[!hbtp]
+\centering
+\includegraphics[scale=0.5]{figures/Proposed_Approach/Proposed_HIMK.png}
+\caption{Calculation of HMM based Intermediate Matching Kernel}
+\end{figure}
+
+
+\section{Classification using SVM and HIMK}
+After getting the HIMK based kernels, we use SVM to classify the test data. SVM uses Kernel Gram Matrices generated using the HIMK for the purpose of classification.
+
+\section{Summary}
+In this chapter, we discussed the proposed model and how it works. We studied the HIMK and why is being applied to our data. In the next chapter, we will look at the experimentation results.
+%\end{document}

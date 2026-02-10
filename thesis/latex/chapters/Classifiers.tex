@@ -1,0 +1,275 @@
+\chapter{Classifiers}\label{Classifiers}
+\thispagestyle{empty}
+\setlength{\parskip}{10pt plus 5pt minus 3pt}
+\setlength{\parindent}{20pt}%
+%
+%\documentclass[10pt,a4paper]{article}
+%\usepackage[utf8]{inputenc}
+%\usepackage[english]{babel}
+%\usepackage{amsmath}
+%\usepackage{amsfonts}
+%\usepackage{amssymb}
+%\usepackage{makeidx}
+%\usepackage{graphicx}
+%\author{Rupali Bhatnagar}
+%\begin{document}
+\section{GMM}
+A Gaussian Mixture Model (GMM) is a parametric probability density function represented as a weighted sum of Gaussian components as seen in Figure \ref{GMM}.\citet{GMM_tut} GMMs are commonly used as a parametric model of the probability distribution of continuous features. GMM parameters are estimated from training data using the iterative Expectation-Maximization (EM) algorithm or Maximum APosteriori (MAP) estimation from a well-trained prior model.\\
+A Gaussian mixture model is a weighted sum of M component Gaussian distributions and is represented as:-
+\begin{equation}
+\mathit{p}\left(x\mid\lambda\right) = \sum_{i=1}^{M}w_i \mathcal{N}\left(x\mid\mu_i\Sigma_i\right)
+\end{equation}
+where x is a D-dimensional vector and $w_i$ are the mixture weights, where ,
+\begin{equation}
+\mathcal{N}\left(x\mid\mu_i\Sigma_i\right)=\frac{1}{2\left(\Pi\right)^{\frac{D}{2}} \mid\sigma\mid^{frac{1}{2}}}exp frac{-1}{2}\left(x- \mu_i\right)'\sigma^{-1}_i\left(x-\mu_i\right)
+\end{equation}
+The mixture weights satisfy the constraint that-
+\[ \sum_{i=1}^{M}w_i=1 \]
+
+\begin{figure}[!hbtp]
+\centering
+\includegraphics[scale=0.5]{figures/Classifiers/GMM.png}
+\caption{Gaussian mixture model}
+\label{GMM}
+\end{figure}
+A GMM is capable of modeling continuous features but is incapable of handling sequence information.
+\section{HMM}
+An HMM(Hidden Markov Model) is a parametric model which are like finite state automata with continuous or discrete valued observations.An HMM $\lambda$ is defined as \[\lambda=A,B,\Pi\]
+where,\\
+$A$= state transition probabilities\\
+$B$=observation probability matrix\\
+$\Pi$=initial state distribution\\
+
+\subsection{The 3 Problems of HMM}\Mycite{Rabiner}
+
+Given a sequence $X=\left( x_0,x_1,x_2,x_3 \ldots \right)$ with corresponding observations $\mathcal{O}=\left(\mathcal{O}_0,\mathcal{O}_1,\mathcal{O}_2,\mathcal{O}_3 \ldots\right)$, the 3 problems of HMM are:-
+\begin{enumerate}
+\item Given the model  $\lambda=A,B,\Pi$ and a sequence of observations $\mathcal{O}$, find $P\left(\mathcal{O}\mid\lambda\right)$. Here, we
+want to determine the likelihood of the observed sequence $\mathcal{O}$, given the model. Use of Forward Backward technique solves this problem.
+\item Given $\lambda=A,B,\Pi$ and an observation sequence $\mathcal{O}$, find an optimal state sequence that resulted in generation of $\mathcal{O}$. Use of Baum Welch algorithm solves this problem.
+\item Given an observation sequence $\mathcal{O}$ and the dimensions N and M, find the model $\lambda=A,B,\Pi$ that maximizes the probability of O. Use of Viterbi decoding methodology solves this problem.
+\end{enumerate}
+
+\begin{figure}[!hbtp]
+\centering
+\includegraphics[scale=0.5]{figures/Classifiers/HMM.png}
+\caption{Hidden markov model}
+\label{HMM}
+\end{figure}
+
+\newpage
+\section{Support Vector Machines}
+Support vector machines are binary classifiers that can classify the data given its features. They work on the principle of Structural Risk Minimization that is based on the statistical learning theory of Vapnik \Mycite{Vapnik_SLT}.SVM is one of the most popular and efficient methods for the task of classification. The detailed description of the working of SVM is presented.
+
+
+\subsection{Maximum Margin Hyperplane}
+In case of linearly separable data, it is easy to construct a separating maximum margin hyperplane between the classes using an SVM.
+\begin{figure}[!hbtp]
+\centering
+\includegraphics[scale=0.5]{figures/Chapter2/LSD.png}
+\caption{Linearly Separable Data\Mycite{Mams_Book}}
+\end{figure}
+
+The \textit{margin of a hyperplane} is defined as the minimum distance of training points from the hyperplane.\Mycite{Mams_Book} The SVM tries to create a maximum margin hyperplane, that is, the margin between each class to the hyperplane is maximum.\\
+Suppose the training data set consists of L examples,$\lbrace x_i,y_i \rbrace_{i=1}^l, x_i \in R^d$ \& $y_i \in \lbrace +1,-1\rbrace$ where, $x_i$ is $i^{th}$ training example and $y_i$  is the corresponding class label.
+A hyperplane is specified as $\boldsymbol{w^tx}+b=0$ where $\boldsymbol{w}$ is the parameter vector and $b$ is the bias. A separating hyperplane that separates the data points of two linearly separable classes satisfies the following constraints:
+\begin{equation}
+y_i( \boldsymbol{w^tx_i} + b) < 0 \quad \textrm{for} \quad i = 1, 2,...., L 
+\end{equation}
+The distance between the nearest example and the separating hyperplane, called the margin, is given by $1/||\boldsymbol{w}||$. The problem of finding the optimal separating hyperplane that maximizes the margin is the same as the problem of minimizing the Euclidean norm of the parameter vector $\boldsymbol{w}$. For reducing the search space of $\boldsymbol{w}$, the constraints that the optimal separating hyperplane must satisfy are specified as follows:
+\begin{equation}\label{eq2}
+y_i( \boldsymbol{w^tx_i} + b) \geq 1 \quad \textrm{for} \quad i = 1, 2,...., L 
+\end{equation}
+
+The learning problem of finding the optimal separating hyperplane is a constrained optimization problem stated as follows: Given the training data set, find the values of $\boldsymbol{w}$ and $b$ such that they satisfy the constraints in (\ref{eq2}) and the parameter vector \textbf{w} minimizes the following cost function:
+\begin{equation}
+J (\boldsymbol{w})=\frac{1}{2} \Vert \boldsymbol{w}^2 \Vert
+ \end{equation}
+The constrained optimization problem is solved using the method of Lagrangian multipliers. The primal form of the Lagrangian objective function is given by
+\begin{equation}\label{Primal}
+\L_p{\boldsymbol{w},b,\alpha} = \frac{1}{2}\Vert \boldsymbol(w) \vert^2 - \sum_{i=1}^l\alpha_i[y_i( \boldsymbol{w^tx_i} + b) -1]
+\end{equation}
+
+where the non-negative variables $\alpha$  are called Lagrange multipliers. The saddle point of the Lagrangian objective function provides the solution for the optimization problem. The solution is determined by first minimizing the Lagrangian objective function with respect to $\boldsymbol{w}$ and $b$, and then maximizing with respect to $\alpha$. The two conditions of optimality due to minimization are :
+\begin{equation}
+\frac{\partial \L_p({\boldsymbol{w},b,\alpha})}{\partial \boldsymbol{w}} =0
+\end{equation}
+\begin{equation}
+\frac{\partial \L_p({\boldsymbol{w},b,\alpha})}{\partial b} =0
+\end{equation}
+Application of optimality condition gives:-
+\begin{equation}\label{opt1}
+\boldsymbol{w}=\sum_{i=1}^L \alpha_i y_i \boldsymbol{x}_i
+\end{equation}
+\begin{equation}\label{opt2}
+\sum_{i=1}^L \alpha_i y_i =0
+\end{equation}
+
+Substituting the expression for $\boldsymbol{w}$ from (\ref{opt1}) in (\ref{Primal}) and using the condition in (\ref{opt2}), the dual form of Lagrangian objective function can be derived as a function of Lagrangian multipliers $\alpha$, as follows:
+\begin{equation}\label{Dual}
+\L_d(\alpha) =  \sum_{i=1}^l\alpha_i - \frac{1}{2}\sum_{i=1}^L \sum_{j=1}^L\alpha_i\ \alpha_j y_i y_j \boldsymbol{x}_i \boldsymbol{x}_j
+\end{equation}
+The optimum values of Lagrangian multipliers are determined by maximizing the objective
+function $\L_d(\alpha)$ subject to the following constraints:
+\begin{equation}
+\sum_{i=1}^L \alpha_i y_i =0 \quad ,\alpha_i \geq 0 \quad for \quad i=1,2 \cdots L 
+\end{equation}
+This optimization problem is solved using quadratic programming methods The data points for which the values of the optimum Lagrange multipliers are not zero are the \textbf{support vectors}. For these data points the distance to the optimal hyperplane is minimum. Hence, the support vectors are the training data points that lie on the margin.
+\begin{figure}[!hbtp]
+\centering
+\includegraphics[scale=0.6]{figures/Chapter2/SV_LSD.png}
+\caption{Support Vectors for Linearly Separable Data\Mycite{Mams_Book}}
+\end{figure}
+
+For the optimum Lagrange multipliers,$\lbrace\alpha^*_j\rbrace_{j=1}^L$, the optimum parameter vector $\boldsymbol{w^*}$ is given by 
+\begin{equation}
+\boldsymbol{w^*}=\sum_{j=1}^L \alpha_j^* y_j \boldsymbol{x}_j
+\end{equation}
+where $L_s$ is the number of support vectors. The discriminant function of the optimal hyperplane in terms of support vectors is given by-
+\begin{equation}\label{SVK}
+\boldsymbol{D}(\boldsymbol{x})=\boldsymbol{w}^{*t}\boldsymbol{x}+b^* =\sum_{j=1}^L \alpha^*_j y_j \boldsymbol{x}^t \boldsymbol{x}_j + b^*
+\end{equation}
+where $b^*$  is the optimum bias. However, the data for most of the real world  tasks are not linearly separable. 
+\subsection{Soft Margin Hyperplane}
+For linearly non-separable data, there are a few points that are \textbf{outliers}.That means if we were to create a separating hyperplane, the optimal hyperplane would have a \textit{narrow margin}. For the purpose of generalization, it is better to have a wide margin than having narrow margin. But if we were to have a wide margin, this would imply that the outliers would be misclassified and wold cause error. In such cases,it is desirable to find an optimal hyperplane that minimizes the probability of classification error for the training data set.\Mycite{Mams_Book} A data point is non-separable when it does not satisfy the
+constraint in (\ref{eq2}).This corresponds to a data point that falls either within margin or on the wrong side of the separating hyperplane as illustrated.
+\begin{figure}[!hbtp]
+\centering
+\includegraphics[scale=0.75]{figures/Chapter2/SV_LNSD.png}
+\caption{Support Vectors for Linearly Non-Separable Data \Mycite{Mams_Book}}
+\end{figure}
+For linearly non-separable classes, the constraints in (\ref{eq2}) are modified by introducing the non negative slack variables $\xi_i$ as follows:
+\begin{equation}\label{eq2_n}
+y_i( \boldsymbol{w^tx_i} + b) \geq 1-\xi_i \quad \textrm{for} \quad i = 1, 2,...., L 
+\end{equation}
+The slack variable $\xi_i$  is a measure of the deviation of a data point $\boldsymbol{x}_i$ from the ideal condition of separability. For $0 \leq \xi_i  \leq 1$, the data point falls inside the region of separation, but on the correct side of the separating hyperplane. For, $\xi_i >1 $ the data point falls on the wrong side of the separating 
+hyperplane. The support vectors are those particular data points that satisfy the constraint in (\ref{eq2_n}) with equality sign. The cost function for linearly non-separable classes is given as-
+\begin{equation}
+J (\boldsymbol{w},\boldsymbol{\xi})=\frac{1}{2} \Vert \boldsymbol{w}^2 \Vert +C \sum_{i=1}^L\xi_i
+ \end{equation}
+where C is a user-specified positive parameter that controls the trade-off between the complexity of the classifier and the number of non-separable data points. Using the method of Lagrange multipliers to solve the constrained optimization problem as in the case of linearly separable classes, the dual form of the Lagrangian objective function can be
+obtained as follows:
+\begin{equation}\label{Dual_n}
+\L_d(\alpha) =  \sum_{i=1}^l\alpha_i - \frac{1}{2}\sum_{i=1}^L \sum_{j=1}^L\alpha_i\ \alpha_j y_i y_j \boldsymbol{x}_i^t \boldsymbol{x}_j
+\end{equation}
+subject to the constraints:-
+\begin{equation}
+\sum_{i=1}^L \alpha_i y_i =0 \quad ,\alpha_i \geq 0 \quad for \quad i=1,2 \cdots L 
+\end{equation}
+It may be noted that the maximum value that the Lagrangian multipliers $\alpha_i$  can take is $C$ for the linearly non-separable classes. For the optimum Lagrange multipliers
+$\lbrace\alpha^*_j\rbrace_{j=1}^L$ ,the optimum parameter vector $\boldsymbol{w^*}$ is given by 
+\begin{equation}
+\boldsymbol{w^*}=\sum_{j=1}^L \alpha_j^* y_j \boldsymbol{x}_j
+\end{equation}
+where $L_s$ is the number of support vectors.The discriminant function of the optimal hyperplane in terms of support vectors is given by-
+\begin{equation}\label{SVK_n}
+\boldsymbol{D}(\boldsymbol{x})=\boldsymbol{w}^{*t}\boldsymbol{x}+b^* =\sum_{j=1}^L \alpha^*_j y_j \boldsymbol{x}^t \boldsymbol{x}_j + b^*
+\end{equation}
+where $b^*$  is the optimum bias.
+
+\subsection{Kernel based SVM}
+It is easy to create SVM for linearly separable data and linearly non-separable data. But for non-linearly separable data \& overlapping data, we cannot use directly use the above strategies since the data is not linearly separable. So, for non-linearly separable classes, an SVM is built by mapping the input vector $\boldsymbol{x}_i$, i = 1, 2, …, L into a high dimensional feature vector $\boldsymbol{\phi}({\boldsymbol{x}}_i)$ using a nonlinear transformation $\boldsymbol{\phi}$, and constructing an optimal hyperplane defined by $\boldsymbol{w^t\phi(x)}+b=0$ to separate the examples of two classes in the feature space . This is based on the Cover's Theorem-
+\begin{theorem}[Cover's Theorem]
+A complex pattern-classification problem, cast in a high-dimensional space non-linearly, is more likely to be linearly separable than in a low-dimensional space, provided that the space is not densely populated.
+\end{theorem}
+\begin{figure}[!hbtp]
+\centering
+\includegraphics[scale=0.5]{figures/Chapter2/Kernel_trans.png}
+\caption{Kernel transformation for non-linearly separable data}
+\end{figure}
+For the construction of the optimal hyperplane in the high dimensional feature space $\boldsymbol{\phi}({\boldsymbol{x})}$, the dual form of the Lagrangian objective function in (\ref{Dual_n}) takes the following form:
+\begin{equation}\label{Dual_kernel}
+\L_d(\alpha) =  \sum_{i=1}^l\alpha_i - \frac{1}{2}\sum_{i=1}^L \sum_{j=1}^L\alpha_i\ \alpha_j y_i y_j \boldsymbol{\phi}({\boldsymbol{x}}_i)^t \boldsymbol{\phi}({\boldsymbol{x}}_i)
+\end{equation}
+subject to the constraints-
+\begin{equation}
+\sum_{i=1}^L \alpha_i y_i =0 \quad ,0 \leq \alpha_i \leq C \quad for \quad i=1,2 \cdots L 
+\end{equation}
+For the optimum Lagrange multipliers$\alpha^*$ ,the optimal vector $\boldsymbol{w^*}$ is given by 
+\begin{equation}
+\boldsymbol{w^*}=\sum_{j=1}^L \alpha_j^* y_j  \boldsymbol{\phi}({\boldsymbol{x}}_j)
+\end{equation}
+where $L_s$ is the number of support vectors.The discriminant function of the optimal hyperplane for an input vector x is defined as-
+\begin{equation}\label{SVK_kernel}
+\boldsymbol{D}(\boldsymbol{x})=\boldsymbol{w}^{*t|}_|(\boldsymbol{x})+b^* =\sum_{j=1}^L \alpha^*_j y_{j|}^| (\boldsymbol{x})^{t|}_| \boldsymbol{x}_j + b^*
+\end{equation}
+where $b^*$  is the optimum bias.Solving (\ref{Dual_kernel}) involves computation of the inner product operation $\boldsymbol{\phi}({\boldsymbol{x}}_j)^t \boldsymbol{\phi}(\boldsymbol{x}_j)$. Evaluation of inner products in a high dimensional feature space
+is avoided by using an inner product kernel, $K(\boldsymbol{x}_i,\boldsymbol{x}_j)$, defined as $K(\boldsymbol{x}_i,\boldsymbol{x}_j)=\boldsymbol{\phi}(\boldsymbol{x}_i)^t\boldsymbol{\phi}(\boldsymbol{x}_j)$.A valid innerproduct kernel $K(\boldsymbol{x}_i,\boldsymbol{x}_j)$ for two pattern vectors $\boldsymbol{x}_i$ and $\boldsymbol{x}_j$ is a symmetric  function for which the following Mercer’s condition holds good:
+\begin{theorem}[Mercer's Condition]
+A real-valued function $K(x,y)$ is said to fulfill Mercer's condition if for all square integrable functions $g(x)$ one has-
+\begin{equation}
+\int \int K(\boldsymbol{x}_i,\boldsymbol{x}_j)g(\boldsymbol{x}_i)g(\boldsymbol{x}_j)d\boldsymbol{x}_i d\boldsymbol{x}_j \geq 0
+\end{equation}
+for all $g(\boldsymbol{x}_i)$ such that
+\begin{equation}
+g^2(\boldsymbol{x}_i)d\boldsymbol{x}_i < \infty
+\end{equation}
+\end{theorem}
+The architecture of a support vector machine for two-class pattern classification that implements the discriminant function of the hyperplane is given. The number of hidden nodes 
+corresponding to the number of support vectors, and the training examples corresponding to the support vectors are determined by maximizing the objective function using a given training data set and for a chosen kernel function.
+
+\begin{figure}[!hbtp]
+\centering
+\includegraphics[scale=0.6]{figures/Chapter2/SVM.png}
+\caption{Architecure of SVM \Mycite{Mams_Book}}
+\end{figure}
+
+
+Some commonly used inner product kernel
+functions are as follows:\\
+\textbf{Polynomial kernel}:$K(\boldsymbol{x}_i,\boldsymbol{x}_j)=(a\boldsymbol{x}_i^t\boldsymbol{x}_j+c)^p$ \\
+\textbf{Sigmoidal kernel}: $K(\boldsymbol{x}_i,\boldsymbol{x}_j)=tanh(\boldsymbol{x}_i^t\boldsymbol{x}_j+c)$\\
+\textbf{Gaussian kernel}: $K(\boldsymbol{x}_i,\boldsymbol{x}_j)=\exp{-\delta\Vert\boldsymbol{x}_i-\boldsymbol{x}_j\Vert^2}$
+
+\subsection{Kernel Methods for SVM}
+For the task of sequential pattern classification, there are 2 types of approaches used:-
+\begin{enumerate}
+\item Hybrid SVM/HMM based approach- In this approach, the varying length pattern is first mapped to a fixed length and then a kernel for fixed length patterns is used for classification. The result of the SVM classification is then used as posterior probability for computing the log likelihood probability in the HMM.
+\item Dynamic Kernel based approach-In this approach, a suitable kernel for varying length patterns, called dynamic kernels, is designed. 
+\end{enumerate}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Dynamic Kernels}
+Dynamic kernels are kernels designed for classification of varying length input patterns through SVM. There are various approaches to design dynamic kernels.
+
+\subsection{Explicit Mapping based Approaches}-
+Explicit Mapping based approaches involve mapping a sequence feature vector into a fixed dimensional representation and then defining a kernel function in the space of that representation.They include:-
+\begin{enumerate}
+\item Fisher Kernel
+\item Likelihood Ratio Kernel
+\end{enumerate}
+They are computationally intensive to calculate because they use an HMM for mapping the sequence into a fixed dimensional Fisher score-space in which the kernel is computed.
+
+
+\subsection{Probabilistic distance based Approaches}-
+In the probabilistic distance based approach,a suitable distance measure between the probability distributions corresponding to the two sequences of
+feature vectors is used as the kernel.
+
+The probability product kernel is an example of this approach. In the probability product kernel, each sequence is represented by an HMM and the kernel is obtained by kernelizing the Kullback-Liebler divergence
+\footnote{Kullback-Liebler divergence or KL divergence is the measure of difference between 2 probability distributions P \& Q, where P represents the ``true'' distribution or the theoretical distribution while Q calculates the ``model'' or experimentaional approximation of P.
+\begin{center}
+$D_{KL}(P \Vert Q)=\Sigma{_i} P(i) \log{\frac{P(i)}{Q(i)}}$
+\end{center}
+}
+between the 2 HMM's.
+
+\subsection{Mapping Based Approaches}
+The mapping based approaches, also known as alignment kernels compute kernel between a pair of sequences in a parametric vector space using Dynamic Time Warping (DTW) kernel. They include the following methodologies:-
+\begin{enumerate}
+\item Dynamic Time Warping kernel
+\item Dynamic Time Alignment kernel
+\item Global Alignment kernel
+\item Triangular Global alignment kernel
+\item Intermediate matching kernel
+\end{enumerate} 
+
+\subsubsection{Intermediate Matching Kernel}
+Intermediate Matching kernel is a mapping based approach in which the kernel between the 2 sets of feature vectors is created by mapping the varying local feature vectors into fixed length virtual feature vectors and then computing a kernel using the set of virtual feature vectors. Various intermediate matching kernels are present in literature:- 
+\begin{enumerate}
+\item GMM-IMK- Proposed by \citet{GMMIMK},the GMM-IMK is constructed by making a GMM over all the training data. Then the GMMIMK is computed as the the sum of values of the base kernel computed for each of the 'Q' pairs of selected local feature vectors , where Q= number of components of the constructed GMM. The GMM-IMK does not capture the sequence information and therefore is not suitable for classification of videos.
+\item HMM-IMK-Proposed by \citet{HIMK}, the HIMK is constructed by making a continuous density HMM for each class using the training data for that particular class.We discuss HIMK in detail in Chapter \ref{Proposed_approach}.
+\end{enumerate}
+
+\section{Summary}
+In this chapter, we discussed about the various classifier methodologies present in the literature. We rationalized whether the methodology could be used for the purpose of classification of videos or not. We now present our approach for video classification.
+%\end{document}

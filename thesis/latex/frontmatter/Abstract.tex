@@ -1,0 +1,18 @@
+\begin{abstracts}  
+\normalsize
+\setlength{\parskip}{10pt plus 5pt minus 3pt}
+\setlength{\parindent}{20pt}%
+%\fontsize{12pt}{12pt}\selectionfont
+
+Human activity recognition is the task of classifying a sequence of human actions. The task of human activity recognition is manifold: first task is to identify the time interval where activity has taken place and then to classify the activity based on the composing actions. 
+
+Videos provide a time-ordering of a set of related frames where each frame is composed of pixels.The video,then can be visualized as 3D matrix of pixels wherein the first two dimensions of the matrix provide for spatial data and the third dimension refers to time.
+
+The spatial patterns observed in the video correspond to the presence of objects,
+backgrounds, textures and other interest points. The temporal patterns on the other hand capture the motion of these observed objects or regions of interest. Both these factors are important for deciding the activity class of a video.
+
+Our proposed approach represents the video as a sequence of feature vectors which capture the spatial and temporal information. Each video is represented a set of frame feature vectors. The representation of each video then depends on the duration of the video. This results in variable length feature vector representation for each video.For the classifier, we propose to use kernel based SVM in which the kernel is a dynamic kernel. The kernel that we propose to use is the HMM based Intermediate Matching Kernel since it is capable of modeling the sequential information modeled in the videos.
+\end{abstracts}
+
+% ----------------------------------------------------------------------
+

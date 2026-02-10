@@ -1,0 +1,180 @@
+\chapter{Observations and Results}\label{Observations}
+\thispagestyle{empty}
+\setlength{\parskip}{10pt plus 5pt minus 3pt}
+\setlength{\parindent}{20pt}%
+
+%\documentclass[10pt,a4paper]{article}
+%\usepackage[utf8]{inputenc}
+%\usepackage[english]{babel}
+%\usepackage{amsmath}
+%\usepackage{amsfonts}
+%\usepackage{amssymb}
+%\usepackage{makeidx}
+%\usepackage{graphicx}
+%\author{Rupali Bhatnagar}
+%\begin{document}
+In the previous chapter, we discussed our proposed model. Our proposed model consisted of 3 stages : feature extraction, HIMK kernel evaluation and SVM classification. We will now discuss the experimental setup and discuss the observations from the experiment results.
+
+\section{Dataset}
+The task of classification of human activity recognition, we have use the KTH dataset which consists of trimmed videos for the following 6 types of human action classes:-
+\begin{itemize}
+\item Boxing
+\item Handclapping
+\item Handwaving
+\item Jogging
+\item Running
+\item Walking
+\end{itemize}
+The KTH datset consists of 25 subjects and is pre-divided into the training set, validation set and testing set.The videos are downsampled to the spatial resolution of 160x120 pixels and have a length of four seconds in average.
+
+\section{Results on proposed model}
+\subsection{HMM based Intermediate Matching Kernel}
+In the proposed system, we create continuous density HMM for the different classes. For each of the class in the dataset,  a continuous density HMM was created with following specifications as per Table \ref{specsHMM}. \\
+
+\begin{table}[!h]
+\centering
+\begin{tabular}{||c|c|c||}
+\hline
+Class Label & No of states in CDHMM & No of components of GMM\\
+\hline
+Boxing&5&3\\
+Handclapping&5&3\\
+Handwaving&9&3\\
+Jogging&20&3\\
+Running&20&3\\
+Walking&20&3\\
+\hline
+\end{tabular}
+\caption{Specifications for CDHMM of each activity class}
+\label{specsHMM}
+\end{table}
+
+The HMM states corresponding to the some of the actions can be visualized as in Figure \ref{boxing}, Figure \ref{handclapping} and Figure \ref{handwaving}.
+
+\begin{figure}[!hbtp]
+\centering
+\includegraphics[scale=0.5]{figures/Observations/Boxing.png}
+\caption{HMM for boxing class}
+\label{boxing}
+\end{figure}
+\begin{figure}[!hbtp]
+\centering
+\includegraphics[scale=0.5]{figures/Observations/Handclapping.png} 
+\caption{HMM for hand clapping class}
+\label{handclapping}
+\end{figure}
+
+\begin{figure}[!hbtp]
+\centering
+\includegraphics[scale=0.5]{figures/Observations/Handwaving.png} 
+\caption{HMM for hand waving class}
+\label{handwaving}
+\end{figure}
+
+\newpage
+
+\subsection{SVM Classification Results}
+For classification using SVM, we used modified version of SVMTorch which allows to specify user defined kernels.The confusion matrix obtained by the proposed methodoly is presented in Table \ref{proposed_CM}
+\begin{table}[!htbp]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+ &Boxing&Handclapping&Handwaving&Jogging&Running&Walking\\
+ \hline
+Boxing&\textbf{63.7\%}&6.72\%&2.61\%&7.34\%&15.9\%&3.73\%\\
+Handclapping&11.31\%&\textbf{71.48\%}&8.41\%&2.64\%&5.11\%&1.05\%\\
+Handwaving&18.26\%&12.39\%&\textbf{65.34\%}&1.4\%&2.03\%&0.58\%\\
+Jogging&8.61\%&1.26\%&1.4\%&\textbf{49.54\%}&22.9\%&16.29\%\\
+Running&4.65\%&0.16\%&0.67\%&19.61\%&\textbf{62.18\%}&12.73\%\\
+Walking&5.13\%&2.19\%&4.31\%&23.47\%&12.29\%&\textbf{52.61\%}\\
+\hline
+\end{tabular}
+\caption{Percentage wise confusion matrix using Proposed Method}
+\label{proposed_CM}
+\end{table}
+
+The accuracy of the proposed method comes out to be 60.81\%.
+
+\subsection{Observations}
+Looking at the confusion matrix from the Table \ref{proposed_CM}, we can make a few observations :-
+\begin{enumerate}
+\item For the boxing action class, there seems to be a lot of similarity with the running class. This may be due to the similar movement of hands in both the cases.
+\item For the jogging class, the classification result is low because appearance wise, jogging, running and walking are similar and the difference only lies in the speed of movement.
+\item For the walking class, the classifier is uncertain as to classify it in jogging class or walking class or running class. This is because the speed of motion is not captured thoroughly by the system.
+\end{enumerate}
+
+\section{Results using HMM}
+The HMM methodology that was discussed in \ref{HMM}. For training, we pass each example of each class to the HMM created for that class. For testing, we pass the examples to all the trained HMMs and assign the class label for the test example as the class of the HMM that gives the highest posterior probability. Table \ref{HMM_CF}
+\begin{table}[!htbp]
+\centering
+\begin{tabular}{|c|c|c|c|c|c|c|}
+\hline
+ &Boxing&Handclapping&Handwaving&Jogging&Running&Walking\\
+ \hline
+Boxing&\textbf{37.9}%&8.3\%&2.61\%&7.34\%&15.9\%&3.73\%\\
+Handclapping&11.31\%&\textbf{71.48\%}&8.41\%&2.64\%&5.11\%&1.05\%\\
+Handwaving&18.26\%&12.39\%&\textbf{65.34\%}&1.4\%&2.03\%&0.58\%\\
+Jogging&8.61\%&1.26\%&1.4\%&\textbf{49.54\%}&22.9\%&16.29\%\\
+Running&4.65\%&0.16\%&0.67\%&19.61\%&\textbf{62.18\%}&12.73\%\\
+Walking&5.13\%&2.19\%&4.31\%&23.47\%&12.29\%&\textbf{52.61\%}\\
+\hline
+\end{tabular}
+\caption{Percentage wise confusion matrix using HMM}
+\label{HMM_CF}
+\end{table}
+
+
+\section{Results using the String kernel}
+The string kernel approach for videos was presented by Ballan. In this methodology, they represent each video as a phrase composed of characters. For comparing phrases, they use the concept of \textit{edit distances} using the Needleman-Wunsch edit distance. To compare different characters of the video represented as a phrase, they use the following distance metrics :-
+\begin{enumerate}
+\item Chi square
+\item Kolomogrov -Smirnov
+\item Bhattacharya
+\item Intersection
+\item Correlation
+\item Mahalanobis distance
+\end{enumerate}
+
+We evaluate results on the dataset using their methodology and get the results as presented in Table \ref{string_CM}
+
+\begin{table}[!htbp]
+\centering
+\begin{tabular}{|c|c|}
+\hline
+Distance Metric & Accuracy\\
+\hline
+\textbf{Chi Square Metric} & \textbf{52.5\%}\\
+Kolomogrov Smirnov metric & 48.37\%\\
+Bhattacharya distance & 43.56\%\\
+Intersection metric & 51.48\%\\
+Correlation metric & 47.31\%\\
+Mahalanobis distance metric & 37.98\%\\
+\hline
+\end{tabular}
+\caption{Percentage wise confusion matrix using String Kernel}
+\label{string_CM}
+\end{table}
+
+The highest accuracy for the string kernel methodology comes out to be around 52.5\%
+
+\section{Comparison of the experimental results}
+As seen from Table \ref{comparison}, it is easily observed that out proposed approach gives better results than the accuracy achieved through the existing string kernel approach. Though in the literature, work has been done to achieve higher accuracy, the proposed model lies comparable to the newer models as well.
+\begin{table}[!htbp]
+\centering
+\begin{tabular}{|c|c|c|}
+\hline
+Representation & Accuracy\\
+\hline
+String kernel with Chi Square Metric & 52.5\%\\
+String kernel with Intersection metric & 51.48\%\\
+String kernel with Kolomogrov Smirnov metric & 48.37\%\\
+String kernel with Correlation metric & 47.31\%\\
+\hline
+\textbf{Proposed method} &\textbf{ 60.81\%}\\
+\hline
+\end{tabular}
+\caption{Comparison of the accuracy of classification}
+\label{comparison}
+\end{table}
+
+%\end{document}
