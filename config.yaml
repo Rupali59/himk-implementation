@@ -31,3 +31,11 @@ svm:
 # Optional: cap training samples for quick runs
 # max_train_samples: 500
 random_state: 42
+
+# Revisions: log every pipeline run and thesis build to MongoDB (optional)
+# Set MONGODB_URI and MONGODB_DATABASE env, or uncomment below.
+revisions:
+  # uri: "mongodb://localhost:27017"
+  # database: "himk"
+  # collection: "revisions"
+  enabled: false

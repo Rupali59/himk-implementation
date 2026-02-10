@@ -8,22 +8,50 @@ Implementation of **Human Activity Recognition using HMM-based Intermediate Matc
 
 ## Quick start (Docker)
 
+**Build from the repo root (Thesis/)** so the image includes the thesis PDF and the full pipeline:
+
 ```bash
-git clone <your-repo-url>
-cd himk-implementation   # or whatever you name the repo
-
-# Optional: add demo data so the app has something to show
-python scripts/make_demo_videos.py
-
-# Train and export results (or skip and run container; results page will ask you to run evaluate)
-python pipelines/train.py --config config.yaml
-python pipelines/evaluate.py --config config.yaml --export data/results.json
-
-# Run the frontend in Docker (standard port 5050)
-docker compose up --build -d
+cd Thesis   # or your repo root containing implementation/ and latex/
+docker compose -f implementation/docker-compose.yml up --build -d
 ```
 
-Open **http://localhost:5050** for the results UI. To change the port: `APP_PORT=8080 docker compose up -d`.
+This starts **MongoDB** (revisions DB) and the **app** (runs demo + train + evaluate, then serves the frontend). Open **http://localhost:5050**.  
+To only serve (skip pipeline): override command: `docker compose -f implementation/docker-compose.yml run --rm app python run_all.py --serve`.
+
+**Without Docker** (local):
+
+```bash
+cd implementation
+python scripts/make_demo_videos.py
+python pipelines/train.py --config config.yaml
+python pipelines/evaluate.py --config config.yaml --export data/results.json
+python frontend/app.py
+```
+
+Open **http://localhost:5050**. To change the port: `APP_PORT=8080`.
+
+### Single script (run everything)
+
+From the implementation directory:
+
+```bash
+# Demo + train + evaluate in one go (skip demo if you already have data with --no-demo)
+python run_all.py --all
+
+# Build thesis PDF then run pipeline (thesis is created as part of the subsystem)
+python run_all.py --thesis --all
+
+# Then optionally serve the frontend
+python run_all.py --all --serve
+
+# Or run only specific steps
+python run_all.py --train --eval
+python run_all.py --serve
+```
+
+**Revisions (MongoDB):** Every pipeline run and thesis build can be logged to MongoDB. Set `MONGODB_URI` and `MONGODB_DATABASE` (e.g. in Docker they point to the `mongo` service), or set `revisions.uri` / `revisions.database` in `config.yaml`. See [Revisions and data models](#revisions-and-data-models) below.
+
+See `python run_all.py --help` for options. Known limitations: [PROBLEMS.md](PROBLEMS.md).
 
 ---
 
@@ -69,6 +97,10 @@ Edit **`config.yaml`**:
    ```bash
    python scripts/download_kth.py --raw-dir /path/to/folder/with/avi/files
    ```
+   Or try parallel download (multiple URLs and parallel organise):
+   ```bash
+   python scripts/download_kth.py --download [--workers 4] [--organize-workers 8]
+   ```
    This creates `data/kth/train/<class>/` and `data/kth/test/<class>/`.
 
 3. **MongoDB (KTH-like DB):**  
@@ -85,27 +117,38 @@ Edit **`config.yaml`**:
 | `python pipelines/evaluate.py --config config.yaml` | Print accuracy and confusion matrix |
 | `python pipelines/evaluate.py --config config.yaml --export data/results.json` | Export results for the frontend |
 | `python frontend/app.py` | Run frontend locally (port 5050) |
-| `docker compose up --build -d` | Run frontend in Docker |
+| `python run_all.py --all` | Demo + train + evaluate (single script) |
+| `python run_all.py --all --serve` | Pipeline + start frontend |
+| `python run_all.py --thesis --all` | Build thesis then demo + train + eval |
+| `docker compose -f implementation/docker-compose.yml up -d` | Run app + MongoDB from repo root |
 
 ---
 
 ## Docker (standard values)
 
-**`docker-compose.yml`** uses:
+**Build from repo root (Thesis/):** `docker compose -f implementation/docker-compose.yml up --build -d`
 
-- **Service name:** `himk-app`
-- **Image:** `himk-implementation:latest`
-- **Port:** `5050` (override with `APP_PORT`, e.g. `APP_PORT=8080 docker compose up -d`)
-- **Volumes:** `./data` → `/app/data` (persists models, cache, results)
-- **Thesis PDF (optional):** Uncomment the thesis volume and set `THESIS_PDF_PATH=/app/thesis.pdf` in `environment` to serve the PDF from the frontend.
+- **Services:** `mongo` (MongoDB 7, port 27017), `app` (pipeline + frontend, port 5050)
+- **App:** Runs `run_all.py --all --serve` (demo + train + evaluate, then serve). Revisions are logged to MongoDB when `MONGODB_URI` / `MONGODB_DATABASE` are set (default in compose).
+- **Thesis:** Built in the Docker image (multi-stage); PDF is at `/app/thesis.pdf` and served by the frontend.
+- **Volumes:** `implementation/data` → `/app/data` (persists models, cache, results); `mongo_data` for MongoDB.
 
-**Run from this directory:**
+---
 
-```bash
-docker compose up --build -d
-```
+## Revisions and data models
 
-**Stop:** `docker compose down`
+Every pipeline run and thesis build can be written to MongoDB so each revision is recorded.
+
+**Enable:** Set `MONGODB_URI` and `MONGODB_DATABASE` (e.g. `mongodb://mongo:27017` and `himk` in Docker), or in `config.yaml` under `revisions`: `uri`, `database`, and optionally `enabled: true`.
+
+**Collections:** One collection (default `revisions`) with documents of two types:
+
+- **`pipeline_run`:** `type`, `created_at`, `config` (snapshot), `git_commit`, `accuracy_pct`, `split`, `class_names`, `confusion_matrix_pct`, `confusion_matrix_counts`, `results_path`, `model_dir`, `status`
+- **`thesis_build`:** `type`, `created_at`, `thesis_path`, `source_dir`, `success`, `log_excerpt`, `git_commit`
+
+Use `--no-revisions` with `run_all.py` to skip logging.
+
+**Stop containers:** `docker compose -f implementation/docker-compose.yml down`
 
 ---
 
@@ -114,6 +157,8 @@ docker compose up --build -d
 ```
 .
 ├── README.md
+├── PROBLEMS.md            # Known limitations and issues
+├── run_all.py             # Single script: demo + train + eval + serve
 ├── LICENSE
 ├── config.yaml
 ├── requirements.txt
