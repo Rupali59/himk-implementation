@@ -1,0 +1,14 @@
+numpy>=1.20
+scipy>=1.7
+scikit-learn>=1.0
+opencv-python>=4.5
+hmmlearn>=0.2.7
+PyYAML>=5.4
+tqdm>=4.62
+joblib>=1.1
+# Optional for HoG (recommended): scikit-image for consistent descriptor size
+scikit-image>=0.19
+# For MongoDB data source (optional)
+pymongo>=4.0
+# For results + thesis preview frontend
+flask>=2.0

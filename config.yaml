@@ -1,0 +1,33 @@
+# Config for Human Activity Recognition (HIMK) - thesis implementation
+# Paths are relative to implementation/ or absolute.
+
+data:
+  source: "filesystem"           # "filesystem" | "mongodb"
+  data_dir: "data/kth"           # For filesystem: data_dir/train/<class>/*.avi, data_dir/test/<class>/*.avi
+  cache_dir: "data/cache"        # Cached HoG features
+  model_dir: "data/models"       # Saved CDHMM + SVM
+
+  # Optional: use a KTH-like DB (e.g. MongoDB) for video metadata instead of folder layout
+  # mongodb:
+  #   uri: "mongodb://localhost:27017"
+  #   database: "kth"
+  #   collection: "videos"
+  #   path_key: "path"            # document field: path to video file (local or URL)
+  #   label_key: "label"          # document field: class (e.g. boxing, handclapping)
+  #   split_key: "split"         # document field: "train" | "test" | "val"
+  #   base_dir: null              # if set, path is relative to this dir
+  # classes: null                 # optional list; if null, inferred from DB or defaults
+
+# CDHMM for HIMK (single HMM on all training data)
+himk:
+  n_states: 6                    # Number of HMM states (use 15+ for full KTH; 6 is stable for small/demo data)
+  n_mix: 2                       # GMM components per state (thesis: 3; 2 for demo)
+  base_kernel_gamma: 0.01        # RBF kernel exp(-gamma * ||x-y||^2)
+
+svm:
+  C: 1.0
+  class_weight: "balanced"
+
+# Optional: cap training samples for quick runs
+# max_train_samples: 500
+random_state: 42

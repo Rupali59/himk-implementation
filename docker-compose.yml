@@ -1,0 +1,32 @@
+# Human Activity Recognition (HIMK) — Docker Compose
+# Standard implementation values. Run from this directory: docker compose up --build -d
+
+name: himk-implementation
+
+services:
+  app:
+    name: himk-app
+    image: himk-implementation:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: himk-app
+    restart: unless-stopped
+    ports:
+      - "${APP_PORT:-5050}:5050"
+    environment:
+      PORT: "5050"
+      # Optional: set when mounting thesis PDF so the frontend can serve it
+      # THESIS_PDF_PATH: "/app/thesis.pdf"
+    volumes:
+      # Persist data, cache, models and results (matches config.yaml data_dir, cache_dir, model_dir)
+      - ./data:/app/data
+      # Optional: mount thesis PDF for frontend preview (path relative to this file)
+      # Uncomment and set THESIS_PDF_PATH above after building the thesis (e.g. make -C ../latex).
+      # - ../latex/build/Thesis.pdf:/app/thesis.pdf:ro
+    healthcheck:
+      test: ["CMD-SHELL", "python -c \"import urllib.request; urllib.request.urlopen('http://127.0.0.1:5050/')\" || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 2
+      start_period: 10s

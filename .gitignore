@@ -1,0 +1,35 @@
+# Data and generated outputs (keep structure; ignore contents)
+data/kth/
+data/cache/
+data/models/
+data/*.json
+!data/.gitignore
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.venv/
+venv/
+env/
+.Python
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# IDE and OS
+.idea/
+.vscode/
+.DS_Store
+*.swp
+*.swo
+
+# Environment
+.env
+.env.local
+*.local
+
+# Docker (optional)
+# docker-compose.override.yml

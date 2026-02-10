@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Human Activity Recognition — Thesis & Results</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0f1419;
+      --surface: #1a2332;
+      --text: #e6edf3;
+      --muted: #8b949e;
+      --accent: #58a6ff;
+      --success: #3fb950;
+      --border: #30363d;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: 'Source Sans 3', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      line-height: 1.6;
+      min-height: 100vh;
+    }
+    .container { max-width: 1100px; margin: 0 auto; padding: 2rem 1.5rem; }
+    h1 {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: clamp(1.5rem, 4vw, 2rem);
+      font-weight: 400;
+      margin: 0 0 0.25rem 0;
+      color: var(--text);
+    }
+    .subtitle { color: var(--muted); font-size: 0.95rem; margin-bottom: 2rem; }
+    nav {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+    nav a {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 600;
+      padding: 0.35rem 0.75rem;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+    nav a:hover { background: var(--surface); }
+    section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.5rem 1.75rem;
+      margin-bottom: 1.5rem;
+    }
+    section h2 {
+      font-family: 'DM Serif Display', Georgia, serif;
+      font-size: 1.35rem;
+      font-weight: 400;
+      margin: 0 0 1rem 0;
+      color: var(--text);
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--border);
+    }
+    .accuracy {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--success);
+      margin: 0.5rem 0;
+    }
+    .accuracy span { font-size: 1rem; font-weight: 600; color: var(--muted); }
+    table.confusion {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      margin-top: 0.5rem;
+    }
+    table.confusion th, table.confusion td {
+      padding: 0.4rem 0.5rem;
+      text-align: right;
+      border: 1px solid var(--border);
+    }
+    table.confusion th { background: var(--bg); font-weight: 600; text-align: center; }
+    table.confusion td.high { background: rgba(63, 185, 80, 0.15); }
+    table.confusion .row-label { text-align: left; font-weight: 600; }
+    .pdf-preview {
+      width: 100%;
+      height: min(80vh, 900px);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--bg);
+    }
+    .loading { color: var(--muted); }
+    .error { color: #f85149; }
+    footer { margin-top: 2rem; color: var(--muted); font-size: 0.85rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Human Activity Recognition using HIMK</h1>
+    <p class="subtitle">HMM-based Intermediate Matching Kernel — Thesis implementation results &amp; preview</p>
+    <nav>
+      <a href="#results">Results</a>
+      <a href="#thesis">Thesis preview</a>
+      <a href="/thesis.pdf" target="_blank">Download PDF</a>
+    </nav>
+
+    <section id="results">
+      <h2>Evaluation results</h2>
+      <div id="results-content" class="loading">Loading…</div>
+    </section>
+
+    <section id="thesis">
+      <h2>Thesis preview</h2>
+      <p class="subtitle" style="margin-bottom: 0.75rem;">Full thesis document (PDF). If the PDF does not load, use <a href="/thesis.pdf" target="_blank" style="color: var(--accent);">Download PDF</a>.</p>
+      <iframe class="pdf-preview" src="/thesis.pdf#view=FitH" title="Thesis PDF"></iframe>
+    </section>
+
+    <footer>
+      Pipeline: HoG → CDHMM → HIMK → SVM. Dataset: KTH-like (6 actions). Run <code>pipelines/evaluate.py --export data/results.json</code> to refresh results.
+    </footer>
+  </div>
+  <script>
+    (function () {
+      const el = document.getElementById('results-content');
+      fetch('/api/results')
+        .then(r => r.ok ? r.json() : Promise.reject(r.status))
+        .then(data => {
+          const acc = data.accuracy_pct;
+          const classes = data.class_names;
+          const cm = data.confusion_matrix_pct || [];
+          let table = '<p class="accuracy">' + acc + '<span>%</span> accuracy <span>(split: ' + (data.split || 'test') + ')</span></p>';
+          table += '<table class="confusion"><thead><tr><th></th>';
+          classes.forEach(c => { table += '<th>' + c + '</th>'; });
+          table += '</tr></thead><tbody>';
+          cm.forEach((row, i) => {
+            table += '<tr><td class="row-label">' + classes[i] + '</td>';
+            row.forEach((cell, j) => {
+              const cls = i === j ? ' class="high"' : '';
+              table += '<td' + cls + '>' + Number(cell).toFixed(1) + '%</td>';
+            });
+            table += '</tr>';
+          });
+          table += '</tbody></table>';
+          el.innerHTML = table;
+        })
+        .catch(() => {
+          el.innerHTML = '<p class="error">Results not found. Run: <code>python pipelines/evaluate.py --export data/results.json</code></p>';
+        });
+    })();
+  </script>
+</body>
+</html>
