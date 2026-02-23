@@ -22,6 +22,10 @@ from pathlib import Path
 
 # Implementation root = directory containing this script
 ROOT = Path(__file__).resolve().parent
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
+
+from src.config import load_config, resolve_thesis_pdf_path  # noqa: E402
 
 
 def run(cmd: list[str], step_name: str, cwd: Path, env: dict | None = None) -> bool:
@@ -33,12 +37,6 @@ def run(cmd: list[str], step_name: str, cwd: Path, env: dict | None = None) -> b
         print(f"Failed: {step_name} (exit {result.returncode})", file=sys.stderr)
         return False
     return True
-
-
-def load_config(config_path: Path) -> dict:
-    import yaml
-    with open(config_path) as f:
-        return yaml.safe_load(f)
 
 
 def get_revision_config(config: dict) -> tuple[str | None, str | None, str | None]:
@@ -172,10 +170,10 @@ def main() -> int:
     if do_serve:
         env = os.environ.copy()
         env["PORT"] = str(args.port)
-        if thesis_path and thesis_path.exists():
-            env["THESIS_PDF_PATH"] = str(thesis_path)
-        elif (ROOT.parent / "latex" / "build" / "Thesis.pdf").exists():
-            env["THESIS_PDF_PATH"] = str(ROOT.parent / "latex" / "build" / "Thesis.pdf")
+        # Prefer the thesis path we just built, otherwise fall back to the
+        # shared resolution logic so the frontend and pipeline agree.
+        resolved_thesis = thesis_path if thesis_path and thesis_path.exists() else resolve_thesis_pdf_path()
+        env["THESIS_PDF_PATH"] = str(resolved_thesis)
         cmd = [sys.executable, str(ROOT / "frontend" / "app.py")]
         print(f"\n--- Serve frontend (http://localhost:{args.port}) ---")
         print("Press Ctrl+C to stop.")

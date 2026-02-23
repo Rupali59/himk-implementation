@@ -21,7 +21,6 @@ services:
       start_period: 5s
 
   app:
-    name: himk-app
     image: himk-implementation:latest
     build:
       context: ..
